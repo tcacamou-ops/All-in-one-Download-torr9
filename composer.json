@@ -1,0 +1,19 @@
+{
+    "autoload": {
+        "psr-4": {
+            "AllI1D\\Torr9\\": "includes/"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "honemo/wp-github-updater": "^1.0"
+    },
+    "require-dev": {
+        "roots/wordpress": "@stable"
+    },
+    "config": {
+        "allow-plugins": {
+            "roots/wordpress-core-installer": true
+        }
+    }
+}
