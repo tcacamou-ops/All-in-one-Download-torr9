@@ -5,6 +5,7 @@
         }
     },
     "require": {
+        "php": "^8.2",
         "guzzlehttp/guzzle": "^7.9",
         "honemo/wp-github-updater": "^1.0"
     },
@@ -12,6 +13,9 @@
         "roots/wordpress": "@stable"
     },
     "config": {
+        "platform": {
+            "php": "8.2"
+        },
         "allow-plugins": {
             "roots/wordpress-core-installer": true
         }
