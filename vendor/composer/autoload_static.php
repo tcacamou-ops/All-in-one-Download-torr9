@@ -71,6 +71,7 @@ class ComposerStaticInit59dad0cdcc42b3aede69f811f770081a
         'AllI1D\\Torr9\\Api' => __DIR__ . '/../..' . '/includes/Api.php',
         'AllI1D\\Torr9\\Api\\CredentialsApi' => __DIR__ . '/../..' . '/includes/Api/CredentialsApi.php',
         'AllI1D\\Torr9\\Components\\Credentials' => __DIR__ . '/../..' . '/includes/Components/Credentials.php',
+        'AllI1D\\Torr9\\Filters\\Status' => __DIR__ . '/../..' . '/includes/Filters/Status.php',
         'AllI1D\\Torr9\\Filters\\Torr9Movies' => __DIR__ . '/../..' . '/includes/Filters/Torr9Movies.php',
         'AllI1D\\Torr9\\Filters\\Torr9TvShows' => __DIR__ . '/../..' . '/includes/Filters/Torr9TvShows.php',
         'AllI1D\\Torr9\\Models\\Torr9ApiClient' => __DIR__ . '/../..' . '/includes/Models/Torr9ApiClient.php',

@@ -19,7 +19,12 @@ class Torr9ApiClient
         'order' => 'desc',
     ];
 
-    public function __construct($apiKey = '', $token)
+    /**
+     * Torr9ApiClient constructor.
+     * @param string $apiKey
+     * @param string $token
+     */
+    public function __construct(string $apiKey, string $token)
     {
         $this->apiKey = $apiKey;
         $this->token = $token;
@@ -27,7 +32,46 @@ class Torr9ApiClient
     }
 
     /**
+     * Test the connection to the Torr9 API
+     * @return bool
+     */
+    public function testConnection()
+    {
+        try {
+            $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString(['q' => 'test']);
+            error_log('Testing Torr9 API connection with path: ' . $path);
+            $headers = [
+                'Authorization' => 'Bearer ' . $this->token,
+            ];
+            $response = $this->client->request('GET', $path, ['headers' => $headers]);
+            return $response->getStatusCode() === 200;
+        } catch (RequestException $e) {
+            error_log('Torr9 API connection test failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Test the connection to the Torr9 RSS API
+     * @return bool
+     */
+    public function testRssConnection()
+    {
+        try {
+            $path = sprintf("%s/rss/freeleech?passkey=%s", $this->baseUrl, $this->apiKey);
+            error_log('Testing Torr9 RSS API connection with path: ' . $path);
+            $response = $this->client->request('GET', $path);
+            return $response->getStatusCode() === 200;
+        } catch (RequestException $e) {
+            error_log('Torr9 RSS API connection test failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * List torrents
+     * @param array $params
+     * @return array|null
      */
     public function listTorrents($params = [])
     {
@@ -48,6 +92,8 @@ class Torr9ApiClient
 
     /**
      * Download the .torrent file
+     * @param string $torrent_id
+     * @return string|null
      */
     public function downloadTorrent($torrent_id)
     {
@@ -62,6 +108,11 @@ class Torr9ApiClient
         }
     }
 
+    /**
+     * Build the query string for the API request
+     * @param array $params
+     * @return string
+     */
     private function buildQueryString($params)
     {
         $params = array_merge($this->defaultParams, $params);
@@ -69,6 +120,11 @@ class Torr9ApiClient
         return http_build_query($params);
     }
 
+    /**
+     * Determine what to query based on the provided parameters
+     * @param array $params
+     * @return array
+     */
     private function whatToQuery($params)
     {
         if (isset($params['type'])) {
@@ -83,6 +139,11 @@ class Torr9ApiClient
         return $params;
     }
 
+    /**
+     * Handle season and episode parameters for TV shows
+     * @param array $params
+     * @return array
+     */
     private function saisonEtEpisodes($params)
     {
         if (isset($params['saison'])) {
@@ -99,6 +160,12 @@ class Torr9ApiClient
         return $params;
     }
 
+    /**
+     * Filter the API response based on language tags
+     * @param array $response
+     * @param array $params
+     * @return array
+     */
     private function filter($response, $params)
     {
         $lang = isset($params['lang']) ? $params['lang'] : null;

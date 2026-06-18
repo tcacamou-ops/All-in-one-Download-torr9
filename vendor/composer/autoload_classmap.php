@@ -10,6 +10,7 @@ return array(
     'AllI1D\\Torr9\\Api' => $baseDir . '/includes/Api.php',
     'AllI1D\\Torr9\\Api\\CredentialsApi' => $baseDir . '/includes/Api/CredentialsApi.php',
     'AllI1D\\Torr9\\Components\\Credentials' => $baseDir . '/includes/Components/Credentials.php',
+    'AllI1D\\Torr9\\Filters\\Status' => $baseDir . '/includes/Filters/Status.php',
     'AllI1D\\Torr9\\Filters\\Torr9Movies' => $baseDir . '/includes/Filters/Torr9Movies.php',
     'AllI1D\\Torr9\\Filters\\Torr9TvShows' => $baseDir . '/includes/Filters/Torr9TvShows.php',
     'AllI1D\\Torr9\\Models\\Torr9ApiClient' => $baseDir . '/includes/Models/Torr9ApiClient.php',

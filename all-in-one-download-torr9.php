@@ -3,7 +3,7 @@
  * Plugin Name: All-in-one Download Torr9
  * Plugin URI: https://github.com/tcacamou-ops/All-in-one-Download-torr9
  * Description: Add-on for All-in-one Download that allows downloading torrents from Torr9.
- * Version: 0.0.2
+ * Version: 0.0.3
  * Author: tcacamou
  * Author URI: https://github.com/tcacamou-ops
  * Text Domain: all-in-one-download-torr9
@@ -14,6 +14,7 @@ namespace AllI1D\Torr9;
 
 use AllI1D\Torr9\Filters\Torr9Movies;
 use AllI1D\Torr9\Filters\Torr9TvShows;
+use AllI1D\Torr9\Filters\Status;
 use honemo\updater\Updater;
 
 // Security: prevent direct file access.
@@ -62,6 +63,7 @@ class Plugin {
 		$Torr9ApiTvShows = new Torr9TvShows();
         add_filter( 'alli1d_process_tvshow', [$Torr9ApiTvShows,'process_tv_show']);
         add_filter( 'alli1d_process_movie', [$Torr9ApiMovies,'process_movie']);
+        add_filter( 'alli1d_process_status', [Status::class,'process_status']);
     }
 }
 
