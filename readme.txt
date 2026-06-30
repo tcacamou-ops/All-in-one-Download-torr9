@@ -4,7 +4,7 @@ Tags: torrent, download, torr9, all-in-one-download
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 0.0.3
+Stable tag: 0.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,14 @@ Torrent files are saved to `wp-content/uploads/torr9/`.
 No. This plugin is an add-on and requires the All-in-one Download plugin to be installed and active.
 
 == Changelog ==
+= 0.0.4 =
+* Security: validate REST API args at registration level
+* Security: encrypt Torr9 API key and token at rest with AES-256-CBC
+* Security: secure URL handling
+* Security: various hardening fixes
+* Security: remove API key from logs
+* Feat: expose credentials as modal on Status page
+
 = 0.0.3 =
 * Feat Add the status feature
 
