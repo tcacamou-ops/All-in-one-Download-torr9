@@ -2,6 +2,7 @@
 namespace AllI1D\Torr9\Filters;
 
 use AllI1D\Torr9\Models\Torr9ApiClient;
+use AllI1D\Helpers\Crypto;
 
 class Status {
 
@@ -10,8 +11,8 @@ class Status {
 
     public static function process_status($status) {
         $apiClient = new Torr9ApiClient(
-            get_option('alli1d_torr9_api_key', ''),
-            get_option('alli1d_torr9_full_token', '')
+            Crypto::decrypt( get_option('alli1d_torr9_api_key', '') ),
+            Crypto::decrypt( get_option('alli1d_torr9_full_token', '') )
         );
         $is_connected = $apiClient->testConnection();
         $is_rss_connected = $apiClient->testRssConnection();

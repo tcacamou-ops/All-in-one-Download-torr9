@@ -39,7 +39,7 @@ class Torr9ApiClient
     {
         try {
             $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString(['q' => 'test']);
-            error_log('Testing Torr9 API connection with path: ' . $path);
+            error_log('Testing Torr9 API connection with path: ' . $this->redact_url( $path ) );
             $headers = [
                 'Authorization' => 'Bearer ' . $this->token,
             ];
@@ -59,11 +59,11 @@ class Torr9ApiClient
     {
         try {
             $path = sprintf("%s/rss/freeleech?passkey=%s", $this->baseUrl, $this->apiKey);
-            error_log('Testing Torr9 RSS API connection with path: ' . $path);
+            error_log('Testing Torr9 RSS API connection with path: ' . $this->redact_url( $path ) );
             $response = $this->client->request('GET', $path);
             return $response->getStatusCode() === 200;
         } catch (RequestException $e) {
-            error_log('Torr9 RSS API connection test failed: ' . $e->getMessage());
+            error_log('Torr9 RSS API connection test failed: ' . $this->redact_url( $e->getMessage() ));
             return false;
         }
     }
@@ -77,7 +77,7 @@ class Torr9ApiClient
     {
         try {
             $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString($params);
-            error_log('Requesting Torr9 API with path: ' . $path);
+            error_log('Requesting Torr9 API with path: ' . $this->redact_url( $path ) );
             $headers = [
                 'Authorization' => 'Bearer ' . $this->token,
             ];
@@ -99,13 +99,21 @@ class Torr9ApiClient
     {
         try {
             $path = sprintf("%s/rss/torrents/%s/download?passkey=%s", $this->baseUrl, $torrent_id, $this->apiKey);
-            error_log('Requesting Torr9 API download with path: ' . $path);
+            error_log('Requesting Torr9 API download with path: ' . $this->redact_url( $path ) );
             $response = $this->client->request('GET', $path);
             return $response->getBody()->getContents(); // Binary content of the .torrent file
         } catch (RequestException $e) {
-            error_log('Torr9 API download request failed: ' . $e->getMessage());
+            error_log('Torr9 API download request failed: ' . $this->redact_url( $e->getMessage() ));
             return null;
         }
+    }
+
+    private function redact_url( string $url ): string {
+        return preg_replace(
+            '/([?&](?:passkey|api_key|token|key)=)[^&]+/',
+            '$1***',
+            $url
+        );
     }
 
     /**

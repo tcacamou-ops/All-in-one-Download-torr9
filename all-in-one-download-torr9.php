@@ -12,9 +12,11 @@
 
 namespace AllI1D\Torr9;
 
+use AllI1D\Torr9\Components\Credentials;
 use AllI1D\Torr9\Filters\Torr9Movies;
 use AllI1D\Torr9\Filters\Torr9TvShows;
 use AllI1D\Torr9\Filters\Status;
+use AllI1D\Helpers\Crypto;
 use honemo\updater\Updater;
 
 // Security: prevent direct file access.
@@ -59,11 +61,38 @@ class Plugin {
     }
 
     private function initialize_filters() {
-		$Torr9ApiMovies = new Torr9Movies();
-		$Torr9ApiTvShows = new Torr9TvShows();
-        add_filter( 'alli1d_process_tvshow', [$Torr9ApiTvShows,'process_tv_show']);
-        add_filter( 'alli1d_process_movie', [$Torr9ApiMovies,'process_movie']);
-        add_filter( 'alli1d_process_status', [Status::class,'process_status']);
+        $Torr9ApiMovies  = new Torr9Movies();
+        $Torr9ApiTvShows = new Torr9TvShows();
+        add_filter( 'alli1d_process_tvshow', [$Torr9ApiTvShows, 'process_tv_show'] );
+        add_filter( 'alli1d_process_movie', [$Torr9ApiMovies, 'process_movie'] );
+        add_filter( 'alli1d_process_status', [Status::class, 'process_status'] );
+        add_filter( 'alli1d_provider_settings_modals', [$this, 'register_modal'] );
+        add_action( 'admin_init', [$this, 'migrate_credentials_encryption'] );
+    }
+
+    public function migrate_credentials_encryption(): void {
+        $migrated_key = 'alli1d_torr9_credentials_encrypted_v1';
+        if ( get_option( $migrated_key ) ) {
+            return;
+        }
+        $api_key = get_option( 'alli1d_torr9_api_key', '' );
+        if ( '' !== $api_key && 0 !== strpos( $api_key, 'enc:' ) ) {
+            update_option( 'alli1d_torr9_api_key', Crypto::encrypt( $api_key ) );
+        }
+        $full_token = get_option( 'alli1d_torr9_full_token', '' );
+        if ( '' !== $full_token && 0 !== strpos( $full_token, 'enc:' ) ) {
+            update_option( 'alli1d_torr9_full_token', Crypto::encrypt( $full_token ) );
+        }
+        update_option( $migrated_key, true );
+    }
+
+    public function register_modal( array $modals ): array {
+        $credentials = new Credentials();
+        $modals['Torr9'] = [
+            'title' => __( 'Torr9 Settings', 'all-in-one-download-torr9' ),
+            'html'  => $credentials->get_html(),
+        ];
+        return $modals;
     }
 }
 

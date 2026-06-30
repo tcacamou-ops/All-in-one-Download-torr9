@@ -3,6 +3,7 @@ namespace AllI1D\Torr9\Filters;
 
 use AllI1D\Torr9\Models\Torr9ApiClient;
 use AllI1D\Actions\Logs;
+use AllI1D\Helpers\Crypto;
 
 class Torr9Movies {
 
@@ -12,8 +13,8 @@ class Torr9Movies {
 
     public function process_movie($movie) {
         $apiClient = new Torr9ApiClient(
-            get_option('alli1d_torr9_api_key', ''),
-            get_option('alli1d_torr9_full_token', '')
+            Crypto::decrypt( get_option('alli1d_torr9_api_key', '') ),
+            Crypto::decrypt( get_option('alli1d_torr9_full_token', '') )
         );
         $params = [
             'q'=> $movie['title'],

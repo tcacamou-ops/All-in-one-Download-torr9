@@ -1,6 +1,8 @@
 <?php
 namespace AllI1D\Torr9\Api;
 
+use AllI1D\Helpers\Crypto;
+
 class CredentialsApi {
 
     private $route_namespace;
@@ -31,24 +33,32 @@ class CredentialsApi {
             $this->route_namespace,
             $this->current_namespace,
             [
-                'methods' => 'POST',
-                'callback' => [$this, 'set_credentials'],
-                'permission_callback' => [$this, 'check_permissions'],
+                'methods'             => 'POST',
+                'callback'            => [ $this, 'set_credentials' ],
+                'permission_callback' => [ $this, 'check_permissions' ],
+                'args'                => [
+                    'torr9_api_key'    => [
+                        'required'          => true,
+                        'type'              => 'string',
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => static fn( $v ) => is_string( $v ) && strlen( $v ) >= 8 && strlen( $v ) <= 512,
+                    ],
+                    'torr9_full_token' => [
+                        'required'          => true,
+                        'type'              => 'string',
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => static fn( $v ) => is_string( $v ) && strlen( $v ) >= 8 && strlen( $v ) <= 2048,
+                    ],
+                ],
             ]
         );
     }
 
     public function set_credentials($request) {
-		$torr9_api_key = $request->get_param('torr9_api_key');
-        if (empty($torr9_api_key)) {
-            return new \WP_REST_Response(['status' => 'You need to specify an API key'], 400);
-        }
+        $torr9_api_key    = $request->get_param('torr9_api_key');
         $torr9_full_token = $request->get_param('torr9_full_token');
-        if (empty($torr9_full_token)) {
-            return new \WP_REST_Response(['status' => 'You need to specify a full token'], 400);
-        }
-        update_option('alli1d_torr9_api_key', $torr9_api_key);
-        update_option('alli1d_torr9_full_token', $torr9_full_token);
+        update_option('alli1d_torr9_api_key', Crypto::encrypt( $torr9_api_key ));
+        update_option('alli1d_torr9_full_token', Crypto::encrypt( $torr9_full_token ));
         return new \WP_REST_Response(['status' => 'success'], 200);
     }
 }
