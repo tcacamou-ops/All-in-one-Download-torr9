@@ -3,7 +3,7 @@
  * Plugin Name: All-in-one Download Torr9
  * Plugin URI: https://github.com/tcacamou-ops/All-in-one-Download-torr9
  * Description: Add-on for All-in-one Download that allows downloading torrents from Torr9.
- * Version: 0.0.5
+ * Version: 0.0.6
  * Author: tcacamou
  * Author URI: https://github.com/tcacamou-ops
  * Text Domain: all-in-one-download-torr9
