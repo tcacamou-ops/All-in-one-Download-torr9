@@ -10,7 +10,6 @@ jQuery(document).ready(function ($) {
             allI1d_tr4ker.api.routes.credentials,
             {
                 tr4ker_api_key: $('#tr4ker_api_key').val(),
-                tr4ker_full_token: $('#tr4ker_full_token').val(),
             },
             function (response, data) {
                 allI1d.showToast('Saved', 'success');

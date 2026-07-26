@@ -43,22 +43,14 @@ class CredentialsApi {
                         'sanitize_callback' => 'sanitize_text_field',
                         'validate_callback' => static fn( $v ) => is_string( $v ) && strlen( $v ) >= 8 && strlen( $v ) <= 512,
                     ],
-                    'tr4ker_full_token' => [
-                        'required'          => true,
-                        'type'              => 'string',
-                        'sanitize_callback' => 'sanitize_text_field',
-                        'validate_callback' => static fn( $v ) => is_string( $v ) && strlen( $v ) >= 8 && strlen( $v ) <= 2048,
-                    ],
                 ],
             ]
         );
     }
 
     public function set_credentials($request) {
-        $tr4ker_api_key    = $request->get_param('tr4ker_api_key');
-        $tr4ker_full_token = $request->get_param('tr4ker_full_token');
+        $tr4ker_api_key = $request->get_param('tr4ker_api_key');
         update_option('alli1d_tr4ker_api_key', Crypto::encrypt( $tr4ker_api_key ));
-        update_option('alli1d_tr4ker_full_token', Crypto::encrypt( $tr4ker_full_token ));
         return new \WP_REST_Response(['status' => 'success'], 200);
     }
 }

@@ -104,10 +104,7 @@ class Plugin {
         if ( '' !== $api_key && 0 !== strpos( $api_key, 'enc:' ) ) {
             update_option( 'alli1d_tr4ker_api_key', Crypto::encrypt( $api_key ) );
         }
-        $full_token = get_option( 'alli1d_tr4ker_full_token', '' );
-        if ( '' !== $full_token && 0 !== strpos( $full_token, 'enc:' ) ) {
-            update_option( 'alli1d_tr4ker_full_token', Crypto::encrypt( $full_token ) );
-        }
+        delete_option( 'alli1d_tr4ker_full_token' );
         update_option( $migrated_key, true );
     }
 

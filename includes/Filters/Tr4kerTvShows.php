@@ -13,8 +13,7 @@ class Tr4kerTvShows {
 
     public function process_tv_show($tvshow) {
         $apiClient = new Tr4kerApiClient(
-            Crypto::decrypt( get_option('alli1d_tr4ker_api_key', '') ),
-            Crypto::decrypt( get_option('alli1d_tr4ker_full_token', '') )
+            Crypto::decrypt( get_option('alli1d_tr4ker_api_key', '') )
         );
         $params = [
             'q'=> $tvshow['title'],

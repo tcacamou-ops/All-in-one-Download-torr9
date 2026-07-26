@@ -11,19 +11,16 @@ class Status {
 
     public static function process_status($status) {
         $apiClient = new Tr4kerApiClient(
-            Crypto::decrypt( get_option('alli1d_tr4ker_api_key', '') ),
-            Crypto::decrypt( get_option('alli1d_tr4ker_full_token', '') )
+            Crypto::decrypt( get_option('alli1d_tr4ker_api_key', '') )
         );
         $is_connected = $apiClient->testConnection();
-        $is_rss_connected = $apiClient->testRssConnection();
 
-        if ($is_connected && $is_rss_connected) {
+        if ($is_connected) {
             $retour = ['status' => 'connected', 'success' => 'Connection to Tr4ker API successful'];
         } else {
             $retour = [
-                'error' => 'Failed to connect to Tr4ker API. Please check your API key and token.',
-                'Full Token connection' => $is_connected ? 'success' : 'failure',
-                'API connection' => $is_rss_connected ? 'success' : 'failure',
+                'error' => 'Failed to connect to Tr4ker API. Please check your API key.',
+                'API connection' => 'failure',
             ];
         }
         $retour['settings_url'] = admin_url('admin.php?page=all-in-one-download-torr9');

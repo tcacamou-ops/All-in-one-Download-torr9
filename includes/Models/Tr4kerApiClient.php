@@ -9,61 +9,35 @@ class Tr4kerApiClient
 {
     // @var Client
     private $client;
-    private $baseUrl = 'https://api.tr4ker.net/api/v1';
+    private $baseUrl = 'https://tr4ker.net/api/torznab';
     private $apiKey = '';
-    private $token = '';
     private $defaultParams = [
-        'page' => 1,
         'limit' => 100,
-        'sortBy' => 'seeders',
-        'order' => 'desc',
     ];
 
     /**
      * Tr4kerApiClient constructor.
      * @param string $apiKey
-     * @param string $token
      */
-    public function __construct(string $apiKey, string $token)
+    public function __construct(string $apiKey)
     {
         $this->apiKey = $apiKey;
-        $this->token = $token;
         $this->client = new Client();
     }
 
     /**
-     * Test the connection to the Tr4ker API
+     * Test the connection to the Tr4ker Torznab API
      * @return bool
      */
     public function testConnection()
     {
         try {
-            $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString(['q' => 'test']);
+            $path = $this->baseUrl.'?'.$this->buildQueryString(['t' => 'search', 'q' => 'test', 'limit' => 1]);
             error_log('Testing Tr4ker API connection with path: ' . $this->redact_url( $path ) );
-            $headers = [
-                'Authorization' => 'Bearer ' . $this->token,
-            ];
-            $response = $this->client->request('GET', $path, ['headers' => $headers]);
-            return $response->getStatusCode() === 200;
-        } catch (RequestException $e) {
-            error_log('Tr4ker API connection test failed: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Test the connection to the Tr4ker RSS API
-     * @return bool
-     */
-    public function testRssConnection()
-    {
-        try {
-            $path = sprintf("%s/rss/freeleech?passkey=%s", $this->baseUrl, $this->apiKey);
-            error_log('Testing Tr4ker RSS API connection with path: ' . $this->redact_url( $path ) );
             $response = $this->client->request('GET', $path);
             return $response->getStatusCode() === 200;
         } catch (RequestException $e) {
-            error_log('Tr4ker RSS API connection test failed: ' . $this->redact_url( $e->getMessage() ));
+            error_log('Tr4ker API connection test failed: ' . $this->redact_url( $e->getMessage() ));
             return false;
         }
     }
@@ -75,32 +49,30 @@ class Tr4kerApiClient
      */
     public function listTorrents($params = [])
     {
+        $lang = $params['lang'] ?? null;
+        unset($params['lang']);
         try {
-            $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString($params);
+            $path = $this->baseUrl.'?'.$this->buildQueryString($params);
             error_log('Requesting Tr4ker API with path: ' . $this->redact_url( $path ) );
-            $headers = [
-                'Authorization' => 'Bearer ' . $this->token,
-            ];
-            $response = $this->client->request('GET', $path, ['headers' => $headers]);
-            $body = json_decode($response->getBody()->getContents(), true);
-            return $this->filter($body, $params); // Returns the raw response content
+            $response = $this->client->request('GET', $path);
+            $torrents = $this->parseTorznabResponse($response->getBody()->getContents());
+            return ['torrents' => $this->filter($torrents, $lang)];
         } catch (RequestException $e) {
-            error_log('Tr4ker API request failed: ' . $e->getMessage());
+            error_log('Tr4ker API request failed: ' . $this->redact_url( $e->getMessage() ));
             return null;
         }
     }
 
     /**
      * Download the .torrent file
-     * @param string $torrent_id
+     * @param string $download_url
      * @return string|null
      */
-    public function downloadTorrent($torrent_id)
+    public function downloadTorrent($download_url)
     {
         try {
-            $path = sprintf("%s/rss/torrents/%s/download?passkey=%s", $this->baseUrl, $torrent_id, $this->apiKey);
-            error_log('Requesting Tr4ker API download with path: ' . $this->redact_url( $path ) );
-            $response = $this->client->request('GET', $path);
+            error_log('Requesting Tr4ker API download with path: ' . $this->redact_url( $download_url ) );
+            $response = $this->client->request('GET', $download_url);
             return $response->getBody()->getContents(); // Binary content of the .torrent file
         } catch (RequestException $e) {
             error_log('Tr4ker API download request failed: ' . $this->redact_url( $e->getMessage() ));
@@ -110,14 +82,14 @@ class Tr4kerApiClient
 
     private function redact_url( string $url ): string {
         return preg_replace(
-            '/([?&](?:passkey|api_key|token|key)=)[^&]+/',
+            '/([?&]apikey=)[^&]+/',
             '$1***',
             $url
         );
     }
 
     /**
-     * Build the query string for the API request
+     * Build the query string for the Torznab API request
      * @param array $params
      * @return string
      */
@@ -125,6 +97,8 @@ class Tr4kerApiClient
     {
         $params = array_merge($this->defaultParams, $params);
         $params = $this->whatToQuery($params);
+        $params['t'] = $params['t'] ?? 'search';
+        $params['apikey'] = $this->apiKey;
         return http_build_query($params);
     }
 
@@ -137,9 +111,9 @@ class Tr4kerApiClient
     {
         if (isset($params['type'])) {
             if ($params['type'] === 'movie') {
-                $params['category'] = 'movie'; // Category for movies
+                $params['cat'] = 2000; // Movies category
             } elseif ($params['type'] === 'tvshow') {
-                $params['category'] = 'tv'; // Category for TV shows
+                $params['cat'] = 5000; // TV category
                 $params = $this->saisonEtEpisodes($params);
             }
             unset($params['type']);
@@ -169,48 +143,57 @@ class Tr4kerApiClient
     }
 
     /**
-     * Filter the API response based on language tags
-     * @param array $response
-     * @param array $params
+     * Parse a Torznab RSS/XML response into a flat list of torrents
+     * @param string $xml_content
      * @return array
      */
-    private function filter($response, $params)
+    private function parseTorznabResponse($xml_content)
     {
-        $lang = isset($params['lang']) ? $params['lang'] : null;
-        // Filter torrents by language using tags
-        if ($lang && isset($response['torrents']) && is_array($response['torrents'])) {
-            $what = str_replace([' '], '.', strtolower($params['name']));
-            $filtered = [];
-            foreach ($response['torrents'] as $torrent) {
-                if (isset($torrent['name']) && stripos($torrent['name'], $what) === false) {
-                    continue; // Skip torrents that don't match the name
-                }
-                // Transform tags to lowercase delimited string
-                $tagsString = '';
-                if (isset($torrent['tags']) && is_array($torrent['tags'])) {
-                    $tagsString = '|' . implode('|', array_map('strtolower', $torrent['tags'])) . '|';
-                }
-                
-                // Filter by language
-                if ($lang === 'VF') {
-                    if (
-                        strpos($tagsString, '|vf|') !== false || 
-                        strpos($tagsString, '|multi|') !== false ||
-                        strpos($tagsString, '|vff|') !== false ||
-                        strpos($tagsString, '|vf2|') !== false ){
-                        $filtered[] = $torrent;
-                    }
-                } elseif ($lang === 'VOSTFR') {
-                    if (strpos($tagsString, '|vostfr|') !== false || strpos($tagsString, '|multi|') !== false) {
-                        $filtered[] = $torrent;
-                    }
-                } else {
-                    $filtered[] = $torrent;
+        $torrents = [];
+        $xml = @simplexml_load_string($xml_content);
+        if ($xml === false || !isset($xml->channel->item)) {
+            return $torrents;
+        }
+        foreach ($xml->channel->item as $item) {
+            $torznab_attrs = $item->children('http://torznab.com/schemas/2015/feed');
+            $seeders = 0;
+            foreach ($torznab_attrs->attr as $attr) {
+                if ((string) $attr['name'] === 'seeders') {
+                    $seeders = (int) $attr['value'];
                 }
             }
-            $response['torrents'] = $filtered;
-            $response['count'] = count($filtered);
+            $torrents[] = [
+                'id' => (string) ($item->enclosure['url'] ?? $item->link),
+                'name' => (string) $item->title,
+                'seeders' => $seeders,
+            ];
         }
-        return $response;
+        return $torrents;
+    }
+
+    /**
+     * Filter torrents by language keywords found in their title
+     * @param array $torrents
+     * @param string|null $lang comma-separated list of keywords (e.g. "VFF,TRUEFRENCH,FRENCH")
+     * @return array
+     */
+    private function filter($torrents, $lang)
+    {
+        if (!$lang) {
+            return $torrents;
+        }
+        $keywords = array_filter(array_map(static fn($k) => strtolower(trim($k)), explode(',', $lang)));
+        if (empty($keywords)) {
+            return $torrents;
+        }
+        return array_values(array_filter($torrents, function ($torrent) use ($keywords) {
+            $title = strtolower($torrent['name']);
+            foreach ($keywords as $keyword) {
+                if (strpos($title, $keyword) !== false) {
+                    return true;
+                }
+            }
+            return false;
+        }));
     }
 }
