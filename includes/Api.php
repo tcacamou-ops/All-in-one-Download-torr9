@@ -1,13 +1,13 @@
 <?php
-namespace AllI1D\Torr9;
+namespace AllI1D\Tr4ker;
 
-use AllI1D\Torr9\Api\CredentialsApi;
+use AllI1D\Tr4ker\Api\CredentialsApi;
 
 class Api
 {
     public static $instance = null;
 
-    public static $route_namespace = 'torr9/v1';
+    public static $route_namespace = 'tr4ker/v1';
 
     public CredentialsApi $credentials_api;
 

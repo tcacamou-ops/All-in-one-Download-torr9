@@ -1,7 +1,7 @@
 {
     "autoload": {
         "psr-4": {
-            "AllI1D\\Torr9\\": "includes/"
+            "AllI1D\\Tr4ker\\": "includes/"
         }
     },
     "require": {

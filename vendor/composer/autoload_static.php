@@ -30,7 +30,7 @@ class ComposerStaticInit59dad0cdcc42b3aede69f811f770081a
         ),
         'A' =>
         array (
-            'AllI1D\\Torr9\\' => 13,
+            'AllI1D\\Tr4ker\\' => 14,
         ),
     );
 
@@ -60,22 +60,22 @@ class ComposerStaticInit59dad0cdcc42b3aede69f811f770081a
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'AllI1D\\Torr9\\' =>
+        'AllI1D\\Tr4ker\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes',
         ),
     );
 
     public static $classMap = array (
-        'AllI1D\\Torr9\\Admin' => __DIR__ . '/../..' . '/includes/Admin.php',
-        'AllI1D\\Torr9\\Api' => __DIR__ . '/../..' . '/includes/Api.php',
-        'AllI1D\\Torr9\\Api\\CredentialsApi' => __DIR__ . '/../..' . '/includes/Api/CredentialsApi.php',
-        'AllI1D\\Torr9\\Components\\Credentials' => __DIR__ . '/../..' . '/includes/Components/Credentials.php',
-        'AllI1D\\Torr9\\Filters\\Status' => __DIR__ . '/../..' . '/includes/Filters/Status.php',
-        'AllI1D\\Torr9\\Filters\\Torr9Movies' => __DIR__ . '/../..' . '/includes/Filters/Torr9Movies.php',
-        'AllI1D\\Torr9\\Filters\\Torr9TvShows' => __DIR__ . '/../..' . '/includes/Filters/Torr9TvShows.php',
-        'AllI1D\\Torr9\\Models\\Torr9ApiClient' => __DIR__ . '/../..' . '/includes/Models/Torr9ApiClient.php',
-        'AllI1D\\Torr9\\Pages\\Settings' => __DIR__ . '/../..' . '/includes/Pages/Settings.php',
+        'AllI1D\\Tr4ker\\Admin' => __DIR__ . '/../..' . '/includes/Admin.php',
+        'AllI1D\\Tr4ker\\Api' => __DIR__ . '/../..' . '/includes/Api.php',
+        'AllI1D\\Tr4ker\\Api\\CredentialsApi' => __DIR__ . '/../..' . '/includes/Api/CredentialsApi.php',
+        'AllI1D\\Tr4ker\\Components\\Credentials' => __DIR__ . '/../..' . '/includes/Components/Credentials.php',
+        'AllI1D\\Tr4ker\\Filters\\Status' => __DIR__ . '/../..' . '/includes/Filters/Status.php',
+        'AllI1D\\Tr4ker\\Filters\\Tr4kerMovies' => __DIR__ . '/../..' . '/includes/Filters/Tr4kerMovies.php',
+        'AllI1D\\Tr4ker\\Filters\\Tr4kerTvShows' => __DIR__ . '/../..' . '/includes/Filters/Tr4kerTvShows.php',
+        'AllI1D\\Tr4ker\\Models\\Tr4kerApiClient' => __DIR__ . '/../..' . '/includes/Models/Tr4kerApiClient.php',
+        'AllI1D\\Tr4ker\\Pages\\Settings' => __DIR__ . '/../..' . '/includes/Pages/Settings.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'GuzzleHttp\\BodySummarizer' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizer.php',
         'GuzzleHttp\\BodySummarizerInterface' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizerInterface.php',

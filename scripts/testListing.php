@@ -1,13 +1,13 @@
 <?php
 // Include the Composer autoloader.
 require_once 'vendor/autoload.php';
-use AllI1D\Torr9\Models\Torr9ApiClient;
+use AllI1D\Tr4ker\Models\Tr4kerApiClient;
 
-echo "Torr9 listing test:\n";
+echo "Tr4ker listing test:\n";
 $apiKey = 'aKeyThatIsNotRealButLooksLikeOne';
 $token = 'aTokenThatIsNotRealButLooksLikeOne';
 
-$client = new Torr9ApiClient($apiKey, $token);
+$client = new Tr4kerApiClient($apiKey, $token);
 // As it comes from the script
 $searchParams = [
     'title' => 'cross',

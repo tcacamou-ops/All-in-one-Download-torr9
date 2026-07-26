@@ -1,15 +1,15 @@
 <?php
-namespace AllI1D\Torr9\Models;
+namespace AllI1D\Tr4ker\Models;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
-class Torr9ApiClient
+class Tr4kerApiClient
 {
     // @var Client
     private $client;
-    private $baseUrl = 'https://api.torr9.net/api/v1';
+    private $baseUrl = 'https://api.tr4ker.net/api/v1';
     private $apiKey = '';
     private $token = '';
     private $defaultParams = [
@@ -20,7 +20,7 @@ class Torr9ApiClient
     ];
 
     /**
-     * Torr9ApiClient constructor.
+     * Tr4kerApiClient constructor.
      * @param string $apiKey
      * @param string $token
      */
@@ -32,38 +32,38 @@ class Torr9ApiClient
     }
 
     /**
-     * Test the connection to the Torr9 API
+     * Test the connection to the Tr4ker API
      * @return bool
      */
     public function testConnection()
     {
         try {
             $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString(['q' => 'test']);
-            error_log('Testing Torr9 API connection with path: ' . $this->redact_url( $path ) );
+            error_log('Testing Tr4ker API connection with path: ' . $this->redact_url( $path ) );
             $headers = [
                 'Authorization' => 'Bearer ' . $this->token,
             ];
             $response = $this->client->request('GET', $path, ['headers' => $headers]);
             return $response->getStatusCode() === 200;
         } catch (RequestException $e) {
-            error_log('Torr9 API connection test failed: ' . $e->getMessage());
+            error_log('Tr4ker API connection test failed: ' . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Test the connection to the Torr9 RSS API
+     * Test the connection to the Tr4ker RSS API
      * @return bool
      */
     public function testRssConnection()
     {
         try {
             $path = sprintf("%s/rss/freeleech?passkey=%s", $this->baseUrl, $this->apiKey);
-            error_log('Testing Torr9 RSS API connection with path: ' . $this->redact_url( $path ) );
+            error_log('Testing Tr4ker RSS API connection with path: ' . $this->redact_url( $path ) );
             $response = $this->client->request('GET', $path);
             return $response->getStatusCode() === 200;
         } catch (RequestException $e) {
-            error_log('Torr9 RSS API connection test failed: ' . $this->redact_url( $e->getMessage() ));
+            error_log('Tr4ker RSS API connection test failed: ' . $this->redact_url( $e->getMessage() ));
             return false;
         }
     }
@@ -77,7 +77,7 @@ class Torr9ApiClient
     {
         try {
             $path = $this->baseUrl.'/torrents/search?' . $this->buildQueryString($params);
-            error_log('Requesting Torr9 API with path: ' . $this->redact_url( $path ) );
+            error_log('Requesting Tr4ker API with path: ' . $this->redact_url( $path ) );
             $headers = [
                 'Authorization' => 'Bearer ' . $this->token,
             ];
@@ -85,7 +85,7 @@ class Torr9ApiClient
             $body = json_decode($response->getBody()->getContents(), true);
             return $this->filter($body, $params); // Returns the raw response content
         } catch (RequestException $e) {
-            error_log('Torr9 API request failed: ' . $e->getMessage());
+            error_log('Tr4ker API request failed: ' . $e->getMessage());
             return null;
         }
     }
@@ -99,11 +99,11 @@ class Torr9ApiClient
     {
         try {
             $path = sprintf("%s/rss/torrents/%s/download?passkey=%s", $this->baseUrl, $torrent_id, $this->apiKey);
-            error_log('Requesting Torr9 API download with path: ' . $this->redact_url( $path ) );
+            error_log('Requesting Tr4ker API download with path: ' . $this->redact_url( $path ) );
             $response = $this->client->request('GET', $path);
             return $response->getBody()->getContents(); // Binary content of the .torrent file
         } catch (RequestException $e) {
-            error_log('Torr9 API download request failed: ' . $this->redact_url( $e->getMessage() ));
+            error_log('Tr4ker API download request failed: ' . $this->redact_url( $e->getMessage() ));
             return null;
         }
     }

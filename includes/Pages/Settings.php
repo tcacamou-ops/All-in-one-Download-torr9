@@ -1,13 +1,13 @@
 <?php
-namespace AllI1D\Torr9\Pages;
+namespace AllI1D\Tr4ker\Pages;
 
-use AllI1D\Torr9\Components\Credentials;
+use AllI1D\Tr4ker\Components\Credentials;
 
 class Settings {
     public function render() {
         $credentials = new Credentials();
         echo '<div class="wrap">';
-        echo '<h1>' . __('Torr9 Settings', 'all-in-one-download-torr9') . '</h1>';
+        echo '<h1>' . __('Tr4ker Settings', 'all-in-one-download-torr9') . '</h1>';
         $credentials->render();
         
         echo '</div>';

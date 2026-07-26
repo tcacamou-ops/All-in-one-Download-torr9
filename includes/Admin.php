@@ -1,7 +1,7 @@
 <?php
 
-namespace AllI1D\Torr9;
-use AllI1D\Torr9\Api;
+namespace AllI1D\Tr4ker;
+use AllI1D\Tr4ker\Api;
 
 class Admin {
     public function __construct() {
@@ -13,15 +13,15 @@ class Admin {
             return;
         }
         wp_enqueue_script(
-            'allI1d-torr9-admin',
-            AllI1D_TORR9_URL . 'assets/js/components/credentials.js',
+            'allI1d-tr4ker-admin',
+            AllI1D_TR4KER_URL . 'assets/js/components/credentials.js',
             ['jquery'],
             '1.0.0'
         );
         $api = Api::get_instance();
         wp_localize_script(
-            'allI1d-torr9-admin',
-            'allI1d_torr9',
+            'allI1d-tr4ker-admin',
+            'allI1d_tr4ker',
             [
                 'api' => $api->get_data(),
             ]

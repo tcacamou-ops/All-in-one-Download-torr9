@@ -2,15 +2,15 @@ jQuery(document).ready(function ($) {
     const $document = $(document); // Cache document lookup
 
     // init events listeners
-    $document.on('click', '#submit-torr9-credentials', submit_torr9_credentials);
+    $document.on('click', '#submit-tr4ker-credentials', submit_tr4ker_credentials);
 
-    function submit_torr9_credentials(e) {
+    function submit_tr4ker_credentials(e) {
         e.preventDefault();
         allI1d.requestWPApi(
-            allI1d_torr9.api.routes.credentials,
+            allI1d_tr4ker.api.routes.credentials,
             {
-                torr9_api_key: $('#torr9_api_key').val(),
-                torr9_full_token: $('#torr9_full_token').val(),
+                tr4ker_api_key: $('#tr4ker_api_key').val(),
+                tr4ker_full_token: $('#tr4ker_full_token').val(),
             },
             function (response, data) {
                 allI1d.showToast('Saved', 'success');
