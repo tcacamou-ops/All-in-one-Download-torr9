@@ -29,7 +29,33 @@ class Tr4kerMovies {
 			return $movie;
 		}
 		do_action('alli1d_log', 'Tr4ker API - ' .count($response['torrents']). ' results', Logs::DEBUG, Logs::FILMS_LOG);
-		
+
+        $matched_torrent = null;
+        foreach ($response['torrents'] as $torrent) {
+            $is_match = apply_filters('alli1d_torrent_matches_title', true, [
+                'torrent_name' => $torrent['name'],
+                'title'        => $movie['title'],
+                'year'         => $movie['year'] ?? null,
+                'saison'       => null,
+                'episode'      => null,
+            ]);
+            if (!$is_match) {
+                do_action('alli1d_torrent_rejected', [
+                    'torrent_name' => $torrent['name'],
+                    'title'        => $movie['title'],
+                    'reason'       => 'title_mismatch',
+                ]);
+                continue;
+            }
+            $matched_torrent = $torrent;
+            break;
+        }
+
+        if (null === $matched_torrent) {
+            do_action('alli1d_log', 'Tr4ker API - No matching torrent title', Logs::DEBUG, Logs::FILMS_LOG);
+            return $movie;
+        }
+
         $upload_dir = wp_upload_dir();
         $tr4ker_dir = $upload_dir['basedir'] . '/tr4ker';
         // Create the tr4ker folder if it does not exist
@@ -39,7 +65,7 @@ class Tr4kerMovies {
         $file_name = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '_', implode('-', [$movie['title'], $movie['audio_format']]))) . '.torrent';
         // Full path to the torrent file
         $file_path = $tr4ker_dir . '/' . $file_name;
-        $file_content = $apiClient->downloadTorrent($response['torrents'][0]['id']);
+        $file_content = $apiClient->downloadTorrent($matched_torrent['id']);
         if (null !== $file_content) {
             file_put_contents($file_path, $file_content);
             $movie['found'] = true;
