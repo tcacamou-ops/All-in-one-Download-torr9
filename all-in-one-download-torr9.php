@@ -3,7 +3,7 @@
  * Plugin Name: All-in-one Download Torr9
  * Plugin URI: https://github.com/tcacamou-ops/All-in-one-Download-torr9
  * Description: Add-on for All-in-one Download that allows downloading torrents from Tr4ker.
- * Version: 0.0.10
+ * Version: 0.0.11
  * Author: tcacamou
  * Author URI: https://github.com/tcacamou-ops
  * Text Domain: all-in-one-download-torr9
@@ -15,6 +15,8 @@ namespace AllI1D\Tr4ker;
 use AllI1D\Tr4ker\Components\Credentials;
 use AllI1D\Tr4ker\Filters\Tr4kerMovies;
 use AllI1D\Tr4ker\Filters\Tr4kerTvShows;
+use AllI1D\Tr4ker\Filters\Tr4kerSearch;
+use AllI1D\Tr4ker\Filters\Tr4kerDownloadSelection;
 use AllI1D\Tr4ker\Filters\Status;
 use AllI1D\Helpers\Crypto;
 use honemo\updater\Updater;
@@ -63,9 +65,13 @@ class Plugin {
     private function initialize_filters() {
         $Tr4kerApiMovies  = new Tr4kerMovies();
         $Tr4kerApiTvShows = new Tr4kerTvShows();
+        $Tr4kerApiSearch  = new Tr4kerSearch();
+        $Tr4kerApiDownloadSelection = new Tr4kerDownloadSelection();
         add_filter( 'alli1d_process_tvshow', [$Tr4kerApiTvShows, 'process_tv_show'] );
         add_filter( 'alli1d_process_movie', [$Tr4kerApiMovies, 'process_movie'] );
         add_filter( 'alli1d_process_status', [Status::class, 'process_status'] );
+        add_filter( 'alli1d_search_providers', [$Tr4kerApiSearch, 'search'], 10, 2 );
+        add_filter( 'alli1d_download_selected_result_tr4ker', [$Tr4kerApiDownloadSelection, 'download'], 10, 2 );
         add_filter( 'alli1d_provider_settings_modals', [$this, 'register_modal'] );
         add_action( 'admin_init', [$this, 'migrate_torr9_to_tr4ker'] );
         add_action( 'admin_init', [$this, 'migrate_credentials_encryption'] );

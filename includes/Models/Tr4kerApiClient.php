@@ -1,12 +1,15 @@
 <?php
 namespace AllI1D\Tr4ker\Models;
 
+use AllI1D\Services\TorrentMetadataParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 
 class Tr4kerApiClient
 {
+    private const REQUEST_TIMEOUT = 10;
+
     // @var Client
     private $client;
     private $baseUrl = 'https://tr4ker.net/api/torznab';
@@ -22,7 +25,7 @@ class Tr4kerApiClient
     public function __construct(string $apiKey)
     {
         $this->apiKey = $apiKey;
-        $this->client = new Client();
+        $this->client = new Client(['timeout' => self::REQUEST_TIMEOUT]);
     }
 
     /**
@@ -61,6 +64,54 @@ class Tr4kerApiClient
             error_log('Tr4ker API request failed: ' . $this->redact_url( $e->getMessage() ));
             return null;
         }
+    }
+
+    /**
+     * Keyword search for the guided-search modal, mapped to the common
+     * provider result contract and capped to the top 10 by seeders.
+     * @param array $criteria ['title'=>string, 'type'=>?string, 'saison'=>?int, 'episode'=>?int]
+     * @return array
+     */
+    public function searchTorrents(array $criteria): array
+    {
+        $params = [
+            'q' => $criteria['title'] ?? '',
+        ];
+        if (!empty($criteria['type'])) {
+            $params['type'] = $criteria['type'];
+        }
+        if (($params['type'] ?? null) === 'tvshow') {
+            if (!empty($criteria['saison'])) {
+                $params['saison'] = $criteria['saison'];
+            }
+            if (!empty($criteria['episode'])) {
+                $params['episode'] = $criteria['episode'];
+            }
+        }
+
+        $response = $this->listTorrents($params);
+        if ($response === null || empty($response['torrents'])) {
+            return [];
+        }
+
+        $parser = new TorrentMetadataParser();
+        $items = array_map(static function ($torrent) use ($parser) {
+            return [
+                'provider' => 'tr4ker',
+                'title'    => $torrent['name'],
+                'quality'  => $parser->extract_quality($torrent['name']),
+                'language' => $parser->extract_language($torrent['name']),
+                'id'       => $torrent['id'],
+                'score'    => $torrent['seeders'],
+                'extra'    => ['seeders' => $torrent['seeders']],
+            ];
+        }, $response['torrents']);
+
+        usort($items, static function ($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        return array_slice($items, 0, 10);
     }
 
     /**
