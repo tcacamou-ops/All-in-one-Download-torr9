@@ -29,6 +29,7 @@
         },
         "allow-plugins": {
             "roots/wordpress-core-installer": true
-        }
+        },
+        "autoloader-suffix": "874f8ff20e93931ae95b2faa544f5a46"
     }
 }
