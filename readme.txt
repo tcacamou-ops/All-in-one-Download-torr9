@@ -4,7 +4,7 @@ Tags: torrent, download, tr4ker, all-in-one-download
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 0.0.11
+Stable tag: 0.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,31 @@ Torrent files are saved to `wp-content/uploads/torr9/`.
 No. This plugin is an add-on and requires the All-in-one Download plugin to be installed and active.
 
 == Changelog ==
+= 0.0.12 =
+* Feat: apply the movie/TV show quality preference (`alli1d_torrent_matches_quality`) when matching Tr4ker results
+
+= 0.0.11 =
+* Feat: add Tr4ker keyword search to the guided-search modal
+* Feat: add Tr4kerDownloadSelection filter for selected-result downloads
+
+= 0.0.10 =
+* Feat: filter Tr4ker torrent results by title match before downloading
+
+= 0.0.9 =
+* Fix: migrate to Tr4ker's Torznab API (single API key, no more full token) — the previous JSON/Bearer endpoint no longer exists
+
+= 0.0.8 =
+* Feat: rebrand Torr9 to Tr4ker — renamed classes, filters and API client, and migrate existing installs (alli1d_torr9_* options and uploads/torr9 folder renamed to Tr4ker)
+
+= 0.0.7 =
+* Chore: internal release process updates (no user-facing changes)
+
+= 0.0.6 =
+* Chore: internal release tooling updates (no user-facing changes)
+
+= 0.0.5 =
+* Chore: maintenance release (no functional changes)
+
 = 0.0.4 =
 * Security: validate REST API args at registration level
 * Security: encrypt Torr9 API key and token at rest with AES-256-CBC

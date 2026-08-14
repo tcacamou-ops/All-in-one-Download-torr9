@@ -1,13 +1,16 @@
 <?php
 namespace AllI1D\Tr4ker\Filters;
 
-use AllI1D\Tr4ker\Models\Tr4kerApiClient;
 use AllI1D\Helpers\Crypto;
 use Throwable;
 
 class Tr4kerSearch {
 
-    public function __construct() {
+    /** @var Tr4kerFeedFetcher */
+    private $feed_fetcher;
+
+    public function __construct(Tr4kerFeedFetcher $feed_fetcher) {
+        $this->feed_fetcher = $feed_fetcher;
     }
 
     public function search($results, $criteria) {
@@ -18,8 +21,9 @@ class Tr4kerSearch {
         }
 
         try {
-            $apiClient = new Tr4kerApiClient($api_key);
-            $items = $apiClient->searchTorrents($criteria);
+            $items = $this->feed_fetcher->get(
+                array_merge($criteria, ['context' => 'search'])
+            ) ?? [];
             $results['items'] = array_merge($results['items'], $items);
         } catch (Throwable $e) {
             error_log('Tr4ker API search failed: ' . $e->getMessage());

@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 // Include the Composer autoloader.
 require_once 'vendor/autoload.php';
 use AllI1D\Tr4ker\Models\Tr4kerApiClient;

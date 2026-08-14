@@ -22,6 +22,10 @@ class Tr4kerDownloadSelection {
                 do_action('alli1d_log', 'Tr4ker API - Failed to download torrent', Logs::ERROR, Logs::FILMS_LOG);
                 return $null_default;
             }
+            if (!Tr4kerApiClient::isValidTorrentContent($file_content)) {
+                do_action('alli1d_log', 'Tr4ker API - Downloaded content is not a valid torrent file', Logs::ERROR, Logs::FILMS_LOG);
+                return $null_default;
+            }
 
             $upload_dir = wp_upload_dir();
             $tr4ker_dir = $upload_dir['basedir'] . '/tr4ker';
